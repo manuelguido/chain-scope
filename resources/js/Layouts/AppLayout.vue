@@ -14,7 +14,7 @@ defineProps({
             <div class="app-topbar__inner">
                 <Link href="/" class="brand">
                     <span class="brand__mark"><Hexagon :size="16" :stroke-width="2" /></span>
-                    <span class="brand__name">ChainScope <span>/ Ethereum</span></span>
+                    <span class="brand__name">Chain Scope <span>/ Ethereum</span></span>
                 </Link>
 
                 <SearchBar v-if="showSearch" />
@@ -31,7 +31,7 @@ defineProps({
 
         <footer class="app-footer">
             <div class="app-footer__inner">
-                <span>ChainScope · Read-only blockchain explorer · Demonstration data</span>
+                <span>Chain Scope · Read-only blockchain explorer · Demonstration data</span>
                 <span>Press <code>/</code> to search</span>
             </div>
         </footer>
