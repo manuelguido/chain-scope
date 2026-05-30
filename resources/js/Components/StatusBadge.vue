@@ -8,10 +8,14 @@ const props = defineProps({
 
 const meta = computed(() => {
     switch (props.status) {
-        case 'success': return { cls: 'pill--ok', label: 'Success', icon: CheckCircle2 };
-        case 'pending': return { cls: 'pill--warn', label: 'Pending', icon: Clock };
-        case 'failed':  return { cls: 'pill--err', label: 'Failed', icon: XCircle };
-        default:        return { cls: 'pill', label: props.status, icon: Clock };
+        case 'success':
+            return { cls: 'pill--ok', label: 'Success', icon: CheckCircle2 };
+        case 'pending':
+            return { cls: 'pill--warn', label: 'Pending', icon: Clock };
+        case 'failed':
+            return { cls: 'pill--err', label: 'Failed', icon: XCircle };
+        default:
+            return { cls: 'pill', label: props.status, icon: Clock };
     }
 });
 </script>

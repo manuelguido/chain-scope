@@ -21,7 +21,10 @@ function submit() {
 }
 
 function onKey(e) {
-    if (e.key === '/' && !['INPUT', 'TEXTAREA'].includes(document.activeElement?.tagName)) {
+    if (
+        e.key === '/' &&
+        !['INPUT', 'TEXTAREA'].includes(document.activeElement?.tagName)
+    ) {
         e.preventDefault();
         inputEl.value?.focus();
     }
@@ -32,7 +35,11 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey));
 </script>
 
 <template>
-    <form class="search" :class="{ 'search--hero': hero }" @submit.prevent="submit">
+    <form
+        class="search"
+        :class="{ 'search--hero': hero }"
+        @submit.prevent="submit"
+    >
         <Search class="search__icon" :size="hero ? 18 : 14" :stroke-width="2" />
         <input
             ref="inputEl"

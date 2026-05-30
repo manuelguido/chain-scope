@@ -15,7 +15,9 @@ export function fmtEth(value, digits = 4) {
     if (!Number.isFinite(v)) return '—';
     if (v === 0) return '0 ETH';
     if (v < 0.0001) return v.toExponential(2) + ' ETH';
-    return v.toLocaleString('en-US', { maximumFractionDigits: digits }) + ' ETH';
+    return (
+        v.toLocaleString('en-US', { maximumFractionDigits: digits }) + ' ETH'
+    );
 }
 
 export function fmtUsd(value) {
@@ -50,5 +52,8 @@ export function ago(unix) {
 
 export function isoTime(unix) {
     if (!unix) return '';
-    return new Date(unix * 1000).toISOString().replace('T', ' ').slice(0, 19) + ' UTC';
+    return (
+        new Date(unix * 1000).toISOString().replace('T', ' ').slice(0, 19) +
+        ' UTC'
+    );
 }

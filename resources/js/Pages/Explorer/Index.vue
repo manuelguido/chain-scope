@@ -1,7 +1,14 @@
 <script setup>
 import { ref, onMounted, onBeforeUnmount } from 'vue';
 import { Head, Link } from '@inertiajs/vue3';
-import { Box, ArrowRightLeft, Activity, Fuel, Coins, Layers } from 'lucide-vue-next';
+import {
+    Box,
+    ArrowRightLeft,
+    Activity,
+    Fuel,
+    Coins,
+    Layers,
+} from 'lucide-vue-next';
 import AppLayout from '@/Layouts/AppLayout.vue';
 import SearchBar from '@/Components/SearchBar.vue';
 import StatusBadge from '@/Components/StatusBadge.vue';
@@ -30,8 +37,12 @@ async function poll() {
     try {
         const [tipRes, blocksRes, txsRes] = await Promise.all([
             fetch('/api/live/tip', { headers: { Accept: 'application/json' } }),
-            fetch('/api/live/blocks', { headers: { Accept: 'application/json' } }),
-            fetch('/api/live/transactions', { headers: { Accept: 'application/json' } }),
+            fetch('/api/live/blocks', {
+                headers: { Accept: 'application/json' },
+            }),
+            fetch('/api/live/transactions', {
+                headers: { Accept: 'application/json' },
+            }),
         ]);
         if (!tipRes.ok || !blocksRes.ok || !txsRes.ok) return;
         const tipData = await tipRes.json();
@@ -78,9 +89,11 @@ onBeforeUnmount(() => {
     <AppLayout :show-search="false">
         <!-- Hero search -->
         <section class="py-10 md:py-14">
-            <div class="text-center mb-6">
-                <h1 class="text-2xl md:text-3xl font-semibold tracking-tight">Ethereum Blockchain Explorer</h1>
-                <p class="text-sm text-[color:var(--color-fg-muted)] mt-2">
+            <div class="mb-6 text-center">
+                <h1 class="text-2xl font-semibold tracking-tight md:text-3xl">
+                    Ethereum Blockchain Explorer
+                </h1>
+                <p class="mt-2 text-sm text-[color:var(--color-fg-muted)]">
                     Search any address, transaction, block, or ENS name
                 </p>
             </div>
@@ -99,7 +112,9 @@ onBeforeUnmount(() => {
             <div class="stat-cell">
                 <div class="stat-cell__label">Gas (base)</div>
                 <div class="stat-cell__value">{{ fmtGwei(gas) }}</div>
-                <div class="stat-cell__meta">≈ {{ fmtUsd(gas * 21000 * ethPrice / 1e9) }} transfer</div>
+                <div class="stat-cell__meta">
+                    ≈ {{ fmtUsd((gas * 21000 * ethPrice) / 1e9) }} transfer
+                </div>
             </div>
             <div class="stat-cell">
                 <div class="stat-cell__label">ETH price</div>
@@ -119,7 +134,11 @@ onBeforeUnmount(() => {
             <div class="section">
                 <div class="section__head">
                     <div class="flex items-center gap-2">
-                        <Box :size="14" :stroke-width="2" class="text-[color:var(--color-fg-muted)]" />
+                        <Box
+                            :size="14"
+                            :stroke-width="2"
+                            class="text-[color:var(--color-fg-muted)]"
+                        />
                         <span class="section__title">Latest blocks</span>
                     </div>
                     <span class="section__sub">Live</span>
@@ -132,9 +151,13 @@ onBeforeUnmount(() => {
                         class="data-row row-block"
                         :class="{ 'row-flash': flashedBlocks.has(b.height) }"
                     >
-                        <div class="row-icon"><Layers :size="14" :stroke-width="2" /></div>
+                        <div class="row-icon">
+                            <Layers :size="14" :stroke-width="2" />
+                        </div>
                         <div class="field">
-                            <div class="field__value field__value--mono">#{{ fmtInt(b.height) }}</div>
+                            <div class="field__value field__value--mono">
+                                #{{ fmtInt(b.height) }}
+                            </div>
                             <div class="field__sub">{{ b.age }}</div>
                         </div>
                         <div class="field">
@@ -143,22 +166,32 @@ onBeforeUnmount(() => {
                         </div>
                         <div class="field text-right">
                             <div class="field__label">Txs</div>
-                            <div class="field__value field__value--mono">{{ fmtInt(b.tx_count) }}</div>
+                            <div class="field__value field__value--mono">
+                                {{ fmtInt(b.tx_count) }}
+                            </div>
                         </div>
                         <div class="field text-right">
                             <div class="field__label">Reward</div>
-                            <div class="field__value field__value--mono">{{ b.reward_eth }} ETH</div>
+                            <div class="field__value field__value--mono">
+                                {{ b.reward_eth }} ETH
+                            </div>
                         </div>
                     </Link>
                 </div>
-                <div class="section__foot text-[color:var(--color-fg-muted)]">Updated every 6s</div>
+                <div class="section__foot text-[color:var(--color-fg-muted)]">
+                    Updated every 6s
+                </div>
             </div>
 
             <!-- Latest transactions -->
             <div class="section">
                 <div class="section__head">
                     <div class="flex items-center gap-2">
-                        <ArrowRightLeft :size="14" :stroke-width="2" class="text-[color:var(--color-fg-muted)]" />
+                        <ArrowRightLeft
+                            :size="14"
+                            :stroke-width="2"
+                            class="text-[color:var(--color-fg-muted)]"
+                        />
                         <span class="section__title">Latest transactions</span>
                     </div>
                     <span class="section__sub">Live</span>
@@ -171,7 +204,9 @@ onBeforeUnmount(() => {
                         class="data-row row-tx"
                         :class="{ 'row-flash': flashedTxs.has(t.hash) }"
                     >
-                        <div class="row-icon"><Activity :size="14" :stroke-width="2" /></div>
+                        <div class="row-icon">
+                            <Activity :size="14" :stroke-width="2" />
+                        </div>
                         <div class="field">
                             <div class="field__value">
                                 <Hash :value="t.hash" truncate="tx" />
@@ -182,23 +217,32 @@ onBeforeUnmount(() => {
                         </div>
                         <div class="field">
                             <div class="field__label">From → To</div>
-                            <div class="field__value field__value--mono text-xs">
+                            <div
+                                class="field__value field__value--mono text-xs"
+                            >
                                 <Hash :value="t.from" truncate="address" />
-                                <span class="text-[color:var(--color-fg-dim)] mx-1">→</span>
+                                <span
+                                    class="mx-1 text-[color:var(--color-fg-dim)]"
+                                    >→</span
+                                >
                                 <span v-if="t.to_label">{{ t.to_label }}</span>
                                 <Hash v-else :value="t.to" truncate="address" />
                             </div>
                         </div>
                         <div class="field text-right">
                             <div class="field__label">Value</div>
-                            <div class="field__value field__value--mono">{{ fmtEth(t.value_eth, 3) }}</div>
+                            <div class="field__value field__value--mono">
+                                {{ fmtEth(t.value_eth, 3) }}
+                            </div>
                         </div>
                         <div class="field text-right">
                             <StatusBadge :status="t.status" />
                         </div>
                     </Link>
                 </div>
-                <div class="section__foot text-[color:var(--color-fg-muted)]">Updated every 6s</div>
+                <div class="section__foot text-[color:var(--color-fg-muted)]">
+                    Updated every 6s
+                </div>
             </div>
         </div>
     </AppLayout>

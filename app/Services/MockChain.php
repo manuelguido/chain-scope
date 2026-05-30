@@ -14,6 +14,7 @@ class MockChain
 
     /** Reference height + timestamp anchor (unix seconds) */
     private const ANCHOR_HEIGHT = 22_104_000;
+
     private const ANCHOR_TIME = 1_730_000_000;
 
     public static function tipHeight(): int
@@ -30,14 +31,16 @@ class MockChain
     {
         $t = floor(time() / 30);
         $rng = self::seedRng((int) $t, 'gas');
-        return round(14 + ($rng / 0xffffffff) * 28, 2);
+
+        return round(14 + ($rng / 0xFFFFFFFF) * 28, 2);
     }
 
     public static function ethPrice(): float
     {
         $t = floor(time() / 60);
         $rng = self::seedRng((int) $t, 'price');
-        return round(2400 + ($rng / 0xffffffff) * 600, 2);
+
+        return round(2400 + ($rng / 0xFFFFFFFF) * 600, 2);
     }
 
     /** Latest blocks list (newest first) */
@@ -48,6 +51,7 @@ class MockChain
         for ($i = 0; $i < $count; $i++) {
             $out[] = self::block($tip - $i);
         }
+
         return $out;
     }
 
@@ -61,10 +65,13 @@ class MockChain
             $block = self::block($tip - $b);
             foreach ($block['transactions'] as $tx) {
                 $out[] = $tx + ['block' => $block['height'], 'age' => $block['age']];
-                if (count($out) >= $count) break 2;
+                if (count($out) >= $count) {
+                    break 2;
+                }
             }
             $b++;
         }
+
         return $out;
     }
 
@@ -82,8 +89,8 @@ class MockChain
 
         return [
             'height' => $height,
-            'hash' => self::hash('block-' . $height, 64),
-            'parent_hash' => self::hash('block-' . ($height - 1), 64),
+            'hash' => self::hash('block-'.$height, 64),
+            'parent_hash' => self::hash('block-'.($height - 1), 64),
             'timestamp' => $time,
             'age' => self::ago($time),
             'tx_count' => $txCount,
@@ -111,11 +118,11 @@ class MockChain
             'Zora' => '0x777777C9898D384F785Ee44Acfe945efDFf5f3E0',
         ];
         for ($i = 0; $i < $count; $i++) {
-            $rng = self::seedRng($height, 'tx-' . $i);
+            $rng = self::seedRng($height, 'tx-'.$i);
             $method = $methods[$rng % count($methods)];
             $isContract = ($rng >> 3) % 3 !== 0;
             $contractName = array_rand($contracts);
-            $to = $isContract ? $contracts[$contractName] : self::address(($rng >> 7) ^ 0xabcdef);
+            $to = $isContract ? $contracts[$contractName] : self::address(($rng >> 7) ^ 0xABCDEF);
             $toLabel = $isContract ? $contractName : null;
             $valueEth = $method === 'Transfer'
                 ? round((($rng >> 11) % 5000) / 100, 4)
@@ -127,7 +134,7 @@ class MockChain
             $status = $statusRoll < 92 ? 'success' : ($statusRoll < 97 ? 'pending' : 'failed');
 
             $out[] = [
-                'hash' => self::hash('tx-' . $height . '-' . $i, 64),
+                'hash' => self::hash('tx-'.$height.'-'.$i, 64),
                 'block_height' => $height,
                 'index' => $i,
                 'from' => self::address(($rng >> 5) ^ 0x123456),
@@ -142,6 +149,7 @@ class MockChain
                 'timestamp' => self::ANCHOR_TIME + ($height - self::ANCHOR_HEIGHT) * self::BLOCK_TIME,
             ];
         }
+
         return $out;
     }
 
@@ -169,7 +177,8 @@ class MockChain
         $tx['block_height'] = $height;
         $tx['age'] = self::ago(self::ANCHOR_TIME + ($height - self::ANCHOR_HEIGHT) * self::BLOCK_TIME);
         $tx['confirmations'] = $tip - $height;
-        $tx['block_hash'] = self::hash('block-' . $height, 64);
+        $tx['block_hash'] = self::hash('block-'.$height, 64);
+
         return $tx;
     }
 
@@ -213,11 +222,11 @@ class MockChain
             $methods = ['Swap', 'Transfer', 'Approve', 'Stake', 'Claim'];
             $method = $methods[$rng % count($methods)];
             $direction = ($rng >> 3) % 2 === 0 ? 'out' : 'in';
-            $other = self::address(($rng >> 5) ^ 0xfedcba);
+            $other = self::address(($rng >> 5) ^ 0xFEDCBA);
             $valueEth = round((($rng >> 7) % 8000) / 1000, 4);
 
             $out[] = [
-                'hash' => self::hash('addr-tx-' . strtolower($addr) . '-' . $i, 64),
+                'hash' => self::hash('addr-tx-'.strtolower($addr).'-'.$i, 64),
                 'block_height' => $height,
                 'timestamp' => $time,
                 'age' => self::ago($time),
@@ -230,6 +239,7 @@ class MockChain
                 'status' => ($rng % 100) < 95 ? 'success' : 'failed',
             ];
         }
+
         return $out;
     }
 
@@ -253,6 +263,7 @@ class MockChain
             $usd = $balance * (1 + ($r2 % 30) / 10);
             $out[] = $tok + ['balance' => $balance, 'usd_value' => round($usd, 2)];
         }
+
         return $out;
     }
 
@@ -260,7 +271,9 @@ class MockChain
     public static function detect(string $input): array
     {
         $q = trim($input);
-        if ($q === '') return ['type' => 'empty', 'value' => ''];
+        if ($q === '') {
+            return ['type' => 'empty', 'value' => ''];
+        }
         // Block number
         if (preg_match('/^\d+$/', $q)) {
             return ['type' => 'block', 'value' => (int) $q];
@@ -268,14 +281,20 @@ class MockChain
         // 0x-prefixed
         if (preg_match('/^0x[0-9a-fA-F]+$/', $q)) {
             $len = strlen($q) - 2;
-            if ($len === 64) return ['type' => 'tx', 'value' => $q];
-            if ($len === 40) return ['type' => 'address', 'value' => $q];
+            if ($len === 64) {
+                return ['type' => 'tx', 'value' => $q];
+            }
+            if ($len === 40) {
+                return ['type' => 'address', 'value' => $q];
+            }
         }
         // ENS-like
         if (str_ends_with($q, '.eth')) {
             $resolved = self::resolveEns($q);
+
             return ['type' => 'address', 'value' => $resolved, 'ens' => $q];
         }
+
         return ['type' => 'unknown', 'value' => $q];
     }
 
@@ -284,6 +303,7 @@ class MockChain
         $known = [
             'vitalik.eth' => '0xd8da6bf26964af9d7eed9e03e53415d37aa96045',
         ];
+
         return $known[strtolower($name)] ?? self::address(crc32(strtolower($name)));
     }
 
@@ -292,12 +312,13 @@ class MockChain
 
     private static function seedRng(int $seed, string $salt): int
     {
-        $h = crc32($salt . ':' . $seed);
+        $h = crc32($salt.':'.$seed);
         // mix
-        $h ^= ($h << 13) & 0xffffffff;
+        $h ^= ($h << 13) & 0xFFFFFFFF;
         $h ^= ($h >> 17);
-        $h ^= ($h << 5) & 0xffffffff;
-        return $h & 0xffffffff;
+        $h ^= ($h << 5) & 0xFFFFFFFF;
+
+        return $h & 0xFFFFFFFF;
     }
 
     private static function pick(array $arr, int $n): string
@@ -308,30 +329,45 @@ class MockChain
     public static function hash(string $seed, int $len = 64): string
     {
         $hex = hash('sha256', $seed);
-        return '0x' . substr($hex, 0, $len);
+
+        return '0x'.substr($hex, 0, $len);
     }
 
     public static function address(int $seed): string
     {
-        return self::hash('addr-' . $seed, 40);
+        return self::hash('addr-'.$seed, 40);
     }
 
     public static function normalizeHash(string $input, int $len): string
     {
         $clean = strtolower(preg_replace('/[^0-9a-fx]/i', '', $input));
-        if (!str_starts_with($clean, '0x')) $clean = '0x' . $clean;
+        if (! str_starts_with($clean, '0x')) {
+            $clean = '0x'.$clean;
+        }
         $hex = substr($clean, 2);
-        if (strlen($hex) > $len) $hex = substr($hex, 0, $len);
-        if (strlen($hex) < $len) $hex = str_pad($hex, $len, '0', STR_PAD_RIGHT);
-        return '0x' . $hex;
+        if (strlen($hex) > $len) {
+            $hex = substr($hex, 0, $len);
+        }
+        if (strlen($hex) < $len) {
+            $hex = str_pad($hex, $len, '0', STR_PAD_RIGHT);
+        }
+
+        return '0x'.$hex;
     }
 
     public static function ago(int $ts): string
     {
         $d = max(0, time() - $ts);
-        if ($d < 60) return $d . 's ago';
-        if ($d < 3600) return intdiv($d, 60) . 'm ago';
-        if ($d < 86400) return intdiv($d, 3600) . 'h ago';
-        return intdiv($d, 86400) . 'd ago';
+        if ($d < 60) {
+            return $d.'s ago';
+        }
+        if ($d < 3600) {
+            return intdiv($d, 60).'m ago';
+        }
+        if ($d < 86400) {
+            return intdiv($d, 3600).'h ago';
+        }
+
+        return intdiv($d, 86400).'d ago';
     }
 }

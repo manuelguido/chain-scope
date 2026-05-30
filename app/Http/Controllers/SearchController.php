@@ -3,9 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Services\MockChain;
-use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Response as HttpResponse;
+use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 
