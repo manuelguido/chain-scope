@@ -4,7 +4,7 @@ import { createInertiaApp } from '@inertiajs/vue3';
 import { createApp, h } from 'vue';
 
 createInertiaApp({
-    title: (title) => `${title} · Chain Scope`,
+    title: (title) => `${title} · ChainScope`,
     resolve: (name) => {
         const pages = import.meta.glob('./Pages/**/*.vue', { eager: true });
 
@@ -16,6 +16,6 @@ createInertiaApp({
             .mount(el);
     },
     progress: {
-        color: '#22d3ee',
+        color: '#6c8cff',
     },
 });

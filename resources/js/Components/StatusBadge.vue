@@ -1,6 +1,5 @@
 <script setup>
 import { computed } from 'vue';
-import { CheckCircle2, Clock, XCircle } from 'lucide-vue-next';
 
 const props = defineProps({
     status: { type: String, required: true }, // success | pending | failed
@@ -9,20 +8,20 @@ const props = defineProps({
 const meta = computed(() => {
     switch (props.status) {
         case 'success':
-            return { cls: 'pill--ok', label: 'Success', icon: CheckCircle2 };
+            return { cls: 'status-badge--success', label: 'Success' };
         case 'pending':
-            return { cls: 'pill--warn', label: 'Pending', icon: Clock };
+            return { cls: 'status-badge--pending', label: 'Pending' };
         case 'failed':
-            return { cls: 'pill--err', label: 'Failed', icon: XCircle };
+            return { cls: 'status-badge--failed', label: 'Failed' };
         default:
-            return { cls: 'pill', label: props.status, icon: Clock };
+            return { cls: '', label: props.status };
     }
 });
 </script>
 
 <template>
-    <span class="pill" :class="meta.cls">
-        <component :is="meta.icon" :size="11" :stroke-width="2.2" />
+    <span class="status-badge" :class="meta.cls">
+        <span class="status-badge__dot" aria-hidden="true" />
         {{ meta.label }}
     </span>
 </template>

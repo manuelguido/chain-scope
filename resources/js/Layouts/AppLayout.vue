@@ -1,11 +1,20 @@
 <script setup>
-import { Link } from '@inertiajs/vue3';
-import { Hexagon, Github } from 'lucide-vue-next';
+import { computed } from 'vue';
+import { Link, usePage } from '@inertiajs/vue3';
 import SearchBar from '@/Components/SearchBar.vue';
 
 defineProps({
     showSearch: { type: Boolean, default: true },
 });
+
+const page = usePage();
+const explorerActive = computed(
+    () =>
+        page.url === '/' ||
+        ['/search', '/block', '/tx', '/address'].some((path) =>
+            page.url.startsWith(path),
+        ),
+);
 </script>
 
 <template>
@@ -13,18 +22,31 @@ defineProps({
         <header class="app-topbar">
             <div class="app-topbar__inner">
                 <Link href="/" class="brand">
-                    <span class="brand__mark"
-                        ><Hexagon :size="16" :stroke-width="2"
-                    /></span>
+                    <span class="brand__mark" aria-hidden="true" />
                     <span class="brand__name"
-                        >Chain Scope <span>/ Ethereum</span></span
+                        >ChainScope <span>/ Ethereum</span></span
                     >
                 </Link>
 
+                <nav class="app-nav" aria-label="Primary navigation">
+                    <Link
+                        href="/"
+                        class="app-nav__link"
+                        :class="{ 'app-nav__link--active': explorerActive }"
+                        >Explorer</Link
+                    >
+                </nav>
+
                 <SearchBar v-if="showSearch" />
 
-                <div class="hidden items-center gap-2 md:flex">
-                    <span class="pill"><span class="live-dot" /> Mainnet</span>
+                <div class="network-status" aria-label="Network status">
+                    <span class="network-status__network"
+                        >Ethereum Mainnet</span
+                    >
+                    <span class="network-status__live">
+                        <span class="live-dot" aria-hidden="true" />
+                        Live status
+                    </span>
                 </div>
             </div>
         </header>
@@ -35,11 +57,14 @@ defineProps({
 
         <footer class="app-footer">
             <div class="app-footer__inner">
-                <span
-                    >Chain Scope · Read-only blockchain explorer · Demonstration
-                    data</span
-                >
-                <span>Press <code>/</code> to search</span>
+                <span class="app-footer__meta">
+                    <span>ChainScope</span>
+                    <span class="app-footer__dot" aria-hidden="true" />
+                    <span>Read-only explorer</span>
+                    <span class="app-footer__dot" aria-hidden="true" />
+                    <span>Demonstration data</span>
+                </span>
+                <span>Ethereum Mainnet · Press <code>/</code> to search</span>
             </div>
         </footer>
     </div>

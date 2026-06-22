@@ -37,7 +37,14 @@ const tab = ref('transactions');
                         data.label
                     }}</span>
                 </div>
-                <div class="page-head__sub">{{ data.address }}</div>
+                <div class="page-head__sub">
+                    <Hash
+                        :value="data.address"
+                        truncate="full"
+                        copy
+                        label="address"
+                    />
+                </div>
             </div>
         </div>
 
@@ -170,8 +177,7 @@ const tab = ref('transactions');
                 <div
                     v-for="tok in data.tokens"
                     :key="tok.symbol"
-                    class="data-row"
-                    style="grid-template-columns: 36px minmax(0, 1fr) auto auto"
+                    class="data-row row-token"
                 >
                     <div class="row-icon mono text-[10px]">
                         {{ tok.symbol.slice(0, 3) }}

@@ -26,7 +26,14 @@ const props = defineProps({
                     Transaction
                     <StatusBadge :status="transaction.status" />
                 </div>
-                <div class="page-head__sub">{{ transaction.hash }}</div>
+                <div class="page-head__sub">
+                    <Hash
+                        :value="transaction.hash"
+                        truncate="full"
+                        copy
+                        label="transaction hash"
+                    />
+                </div>
             </div>
         </div>
 
@@ -41,7 +48,12 @@ const props = defineProps({
                 <div class="detail-row">
                     <div class="detail-label">Hash</div>
                     <div class="detail-value mono text-xs break-all">
-                        {{ transaction.hash }}
+                        <Hash
+                            :value="transaction.hash"
+                            truncate="full"
+                            copy
+                            label="transaction hash"
+                        />
                     </div>
                 </div>
                 <div class="detail-row">

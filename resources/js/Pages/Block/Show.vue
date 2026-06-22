@@ -30,7 +30,14 @@ const props = defineProps({
                         >{{ fmtInt(confirmations) }} confirmations</span
                     >
                 </div>
-                <div class="page-head__sub">{{ block.hash }}</div>
+                <div class="page-head__sub">
+                    <Hash
+                        :value="block.hash"
+                        truncate="full"
+                        copy
+                        label="block hash"
+                    />
+                </div>
             </div>
             <div class="flex items-center gap-2">
                 <Link :href="`/block/${block.height - 1}`" class="btn-ghost"
@@ -69,7 +76,12 @@ const props = defineProps({
                 <div class="detail-row">
                     <div class="detail-label">Hash</div>
                     <div class="detail-value mono text-xs break-all">
-                        {{ block.hash }}
+                        <Hash
+                            :value="block.hash"
+                            truncate="full"
+                            copy
+                            label="block hash"
+                        />
                     </div>
                 </div>
                 <div class="detail-row">

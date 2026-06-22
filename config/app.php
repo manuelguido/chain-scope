@@ -13,7 +13,7 @@ return [
     |
     */
 
-    'name' => env('APP_NAME', 'Chain Scope'),
+    'name' => env('APP_NAME', 'ChainScope'),
 
     /*
     |--------------------------------------------------------------------------
