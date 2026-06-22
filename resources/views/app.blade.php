@@ -7,6 +7,8 @@
 
     <title inertia>{{ config('app.name', 'ChainScope') }}</title>
 
+    <link rel="icon" type="image/png" href="/favicon.png">
+
     <link rel="stylesheet" href="https://use.typekit.net/ccz3qha.css">
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])

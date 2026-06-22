@@ -65,7 +65,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey));
             autocomplete="off"
             enterkeyhint="search"
         />
-        <span class="search__hint" aria-hidden="true">/</span>
+        <!-- <span class="search__hint" aria-hidden="true">/</span> -->
         <button
             v-if="hero"
             class="search__submit"

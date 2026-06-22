@@ -164,17 +164,17 @@ onBeforeUnmount(() => {
                         <Link
                             class="hero-example technical-value"
                             :href="`/block/${tip}`"
-                            >#{{ fmtInt(tip) }}</Link
-                        >
-                        <Link class="hero-example" href="/search?q=vitalik.eth"
-                            >vitalik.eth</Link
-                        >
+                            >#{{ fmtInt(tip) }}
+                        </Link>
+                        <Link class="hero-example" href="/search?q=vitalik.eth">
+                            vitalik.eth
+                        </Link>
                         <Link
                             v-if="transactions[0]"
                             class="hero-example technical-value"
                             :href="`/tx/${transactions[0].hash}`"
-                            >latest tx</Link
-                        >
+                            >latest tx
+                        </Link>
                     </div>
                 </div>
             </div>
@@ -183,11 +183,7 @@ onBeforeUnmount(() => {
         <section class="section pulse-panel" aria-labelledby="pulse-heading">
             <div class="section__head">
                 <div class="flex items-center gap-2">
-                    <Gauge
-                        :size="15"
-                        :stroke-width="2"
-                        class="text-[color:var(--color-accent)]"
-                    />
+                    <Gauge :size="15" :stroke-width="2" class="text-accent" />
                     <span id="pulse-heading" class="section__title"
                         >Network pulse</span
                     >
@@ -325,7 +321,7 @@ onBeforeUnmount(() => {
                         No block data is available yet.
                     </div>
                 </div>
-                <div class="section__foot text-[color:var(--color-fg-muted)]">
+                <div class="section__foot text-fg-muted">
                     MockChain read-only feed · polling every 6s
                 </div>
             </section>
@@ -339,7 +335,7 @@ onBeforeUnmount(() => {
                         <ArrowRightLeft
                             :size="15"
                             :stroke-width="2"
-                            class="text-[color:var(--color-accent)]"
+                            class="text-accent"
                         />
                         <span
                             id="latest-transactions-heading"
@@ -420,7 +416,7 @@ onBeforeUnmount(() => {
                         No transaction data is available yet.
                     </div>
                 </div>
-                <div class="section__foot text-[color:var(--color-fg-muted)]">
+                <div class="section__foot text-fg-muted">
                     Hashes and addresses copy without leaving the live feed.
                 </div>
             </section>

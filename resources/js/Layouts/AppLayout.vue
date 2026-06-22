@@ -22,10 +22,15 @@ const explorerActive = computed(
         <header class="app-topbar">
             <div class="app-topbar__inner">
                 <Link href="/" class="brand">
-                    <span class="brand__mark" aria-hidden="true" />
-                    <span class="brand__name"
-                        >ChainScope <span>/ Ethereum</span></span
-                    >
+                    <!-- <span class="brand__mark" aria-hidden="true" /> -->
+                    <img
+                        src="../../img/icon-1024.png"
+                        alt="Chess Core logo"
+                        class="h-9 w-9"
+                    />
+                    <span class="brand__name">
+                        ChainScope <span>/ Ethereum</span>
+                    </span>
                 </Link>
 
                 <nav class="app-nav" aria-label="Primary navigation">
@@ -33,8 +38,9 @@ const explorerActive = computed(
                         href="/"
                         class="app-nav__link"
                         :class="{ 'app-nav__link--active': explorerActive }"
-                        >Explorer</Link
                     >
+                        Explorer
+                    </Link>
                 </nav>
 
                 <SearchBar v-if="showSearch" />
