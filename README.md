@@ -1,58 +1,204 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# ChainScope
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+ChainScope is a self-contained blockchain explorer for reviewing the product shape of an Ethereum-style block explorer. It has a live-feeling home page, global search, block pages, transaction pages, address pages, copyable hashes, and deeply linked detail views.
 
-## About Laravel
+The repository is designed for engineers who want to study explorer interaction patterns without setting up an RPC provider, an indexer, credentials, or background ingestion jobs.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## Explorer Experience
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+Blockchain explorers are dense products. A useful explorer needs to make hashes, heights, accounts, fees, confirmations, and network activity navigable without burying the user in raw data.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+ChainScope isolates that surface in a local application. The data is illustrative, but the navigation model, polling behavior, formatting, and request flow are real application code.
 
-## Learning Laravel
+## Features
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+- Explorer home page with network pulse cards.
+- Live polling every 6 seconds for tip height, gas price, ETH price reference, latest blocks, and latest transactions.
+- Search for block numbers, transaction hashes, addresses, and ENS-like names.
+- Block detail pages with hash, parent hash, validator, gas usage, base fee, reward, size, confirmations, and representative transactions.
+- Transaction detail pages with status, block context, sender, recipient, method, value, fee, gas price, and confirmations.
+- Address detail pages with balance, transaction count, first-seen time, account type, recent activity, and token holdings.
+- Copyable hashes and addresses.
+- Deterministic mock data so searches and detail pages are repeatable.
+- Graceful not-found page for unknown search input.
 
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+## Data Boundary
 
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
+ChainScope does not read Ethereum mainnet. All blocks, transactions, addresses, balances, token holdings, and metrics come from `App\Services\MockChain`.
 
-## Agentic Development
+The mock service has two deliberate behaviors:
 
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+- It advances the chain tip based on wall-clock time using a 12-second block cadence.
+- It generates deterministic data from seeds, heights, hashes, and addresses so a route remains stable across requests.
 
-```bash
-composer require laravel/boost --dev
+That means the explorer can feel live while remaining fully local. It also means balances, prices, transactions, validators, labels, and token holdings are not real network data.
 
-php artisan boost:install
+## Routes
+
+| Route | Purpose |
+| --- | --- |
+| `/` | Explorer home page |
+| `/search?q=...` | Detects the query type and redirects to the matching resource |
+| `/tx/{hash}` | Transaction detail |
+| `/block/{height}` | Block detail |
+| `/address/{address}` | Address detail |
+| `/api/live/tip` | JSON endpoint for tip, gas, ETH price, and timestamp |
+| `/api/live/blocks` | JSON endpoint for latest blocks |
+| `/api/live/transactions` | JSON endpoint for latest transactions |
+
+## Search Behavior
+
+The search controller delegates detection to `MockChain::detect()`:
+
+- numeric input becomes a block lookup
+- `0x` plus 64 hex characters becomes a transaction lookup
+- `0x` plus 40 hex characters becomes an address lookup
+- names ending in `.eth` resolve through the mock ENS resolver
+- blank search redirects home
+- anything else renders the not-found page
+
+`vitalik.eth` is mapped to a known mock address. Other `.eth` names resolve deterministically from their name.
+
+## Project Layout
+
+```text
+app/Services/MockChain.php
+    Deterministic chain data generator and search classifier.
+
+app/Http/Controllers/
+    Explorer, search, block, transaction, address, and live JSON endpoints.
+
+resources/js/Pages/Explorer/Index.vue
+    Home screen with search, network pulse, latest blocks, and latest txs.
+
+resources/js/Pages/Block/Show.vue
+resources/js/Pages/Transaction/Show.vue
+resources/js/Pages/Address/Show.vue
+    Detail screens for explorer resources.
+
+resources/js/Components/
+    Shared layout, search bar, status badge, and hash display components.
+
+resources/js/utils/format.js
+    Formatting helpers for ETH, USD, gwei, byte size, integer, and timestamps.
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+## Stack
+
+| Layer | Tools |
+| --- | --- |
+| Backend | Laravel 13, PHP 8.3+, Inertia Laravel |
+| Frontend | Vue 3, Vite, Tailwind CSS 4 |
+| UI | lucide-vue-next |
+| Data | Deterministic mock blockchain service |
+| Quality | PHPUnit, Laravel Pint, ESLint, Prettier |
+
+## Local Setup
+
+Install dependencies:
+
+```bash
+composer install
+npm ci
+```
+
+Create and configure the local environment:
+
+```bash
+cp .env.example .env
+php artisan key:generate
+```
+
+Configure the database connection in `.env` before running migrations.
+
+```bash
+php artisan migrate
+```
+
+Run the local development stack:
+
+```bash
+composer dev
+```
+
+Or run the server and Vite separately:
+
+```bash
+php artisan serve
+npm run dev
+```
+
+## Build
+
+```bash
+npm run build
+```
+
+## Tests And Quality
+
+Run the backend test suite:
+
+```bash
+composer test
+```
+
+Format PHP:
+
+```bash
+composer lint
+```
+
+Run frontend checks:
+
+```bash
+npm run lint:check
+npm run format:check
+```
+
+Apply frontend fixes:
+
+```bash
+npm run lint:fix
+npm run format
+```
+
+## Implementation Notes
+
+The explorer home page receives initial data from `ExplorerController` and then refreshes with the three `/api/live/*` endpoints. New blocks and transactions are detected in the client by comparing incoming ids against the previous list, then temporarily highlighted.
+
+Transaction lookups search recent mock blocks first. If the hash is syntactically valid but not in the recent window, `MockChain` synthesizes a transaction page from the hash so the route still produces a useful detail view.
+
+Address pages synthesize account metadata, recent transactions, and token holdings from the normalized address. A small set of known labels is included for recognizable examples.
+
+## Current Limits
+
+- No RPC connection.
+- No real balances, logs, receipts, traces, contracts, or token transfers.
+- No indexing pipeline or queued ingestion.
+- No persistence for chain data.
+- No dedicated tests yet for `MockChain`, search redirects, or explorer detail routes.
 
 ## Contributing
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+Useful improvements should preserve the no-external-service development experience unless the repository deliberately changes scope.
 
-## Code of Conduct
+Good next areas:
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+- tests for `MockChain::detect()` and deterministic generators
+- feature tests for search redirects and detail pages
+- clearer empty/error states for live polling
+- richer mock receipts, logs, and contract calls
+- an adapter boundary for a future real chain provider
 
-## Security Vulnerabilities
+Before opening a pull request, run:
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+```bash
+composer test
+npm run lint:check
+npm run format:check
+npm run build
+```
 
 ## License
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+ChainScope is open-sourced under the MIT license. See `LICENSE`.
